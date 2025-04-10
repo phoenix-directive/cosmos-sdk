@@ -2,7 +2,6 @@ package vesting
 
 import (
 	"context"
-	"fmt"
 	"math"
 
 	"github.com/hashicorp/go-metrics"
@@ -270,9 +269,9 @@ func (s msgServer) DonateAllVestingTokens(goCtx context.Context, msg *types.MsgD
 		if err != nil {
 			return nil, err
 		}
-		validator, found := sk.GetValidator(ctx, validatorAddr)
-		if !found {
-			return nil, fmt.Errorf("validator not found")
+		validator, err := sk.GetValidator(ctx, validatorAddr)
+		if err != nil {
+			return nil, err
 		}
 		// Try to delete the dust delegation
 		_, removedTokens := sk.RemoveValidatorTokensAndShares(ctx, validator, delegation.Shares)
