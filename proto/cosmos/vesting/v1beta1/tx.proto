@@ -27,6 +27,9 @@ service Msg {
   //
   // Since: cosmos-sdk 0.46
   rpc CreatePeriodicVestingAccount(MsgCreatePeriodicVestingAccount) returns (MsgCreatePeriodicVestingAccountResponse);
+  // DonateAllVestingTokens defines a method that enables donating all vesting
+  // tokens to community pool
+  rpc DonateAllVestingTokens(MsgDonateAllVestingTokens) returns (MsgDonateAllVestingTokensResponse);
 }
 
 // MsgCreateVestingAccount defines a message that enables creating a vesting
@@ -100,3 +103,17 @@ message MsgCreatePeriodicVestingAccount {
 //
 // Since: cosmos-sdk 0.46
 message MsgCreatePeriodicVestingAccountResponse {}
+
+// MsgDonateAllVestingTokens defines a message that enables donating all vesting
+// token to community pool.
+message MsgDonateAllVestingTokens {
+  option (cosmos.msg.v1.signer) = "from_address";
+  option (amino.name)           = "cosmos-sdk/MsgDonateAllVestingTokens";
+  option (gogoproto.equal)      = true;
+
+  string from_address = 1 [(gogoproto.moretags) = "yaml:\"from_address\""];
+}
+
+// MsgDonateAllVestingTokensResponse defines the Msg/MsgDonateAllVestingTokens
+// response type.
+message MsgDonateAllVestingTokensResponse {}
