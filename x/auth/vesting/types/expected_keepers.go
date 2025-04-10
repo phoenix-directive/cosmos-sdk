@@ -28,6 +28,6 @@ type StakingKeeper interface {
 	GetRedelegations(ctx context.Context, delegator sdk.AccAddress, maxRetrieve uint16) (redelegations []stakingtypes.Redelegation, err error)
 
 	RemoveValidatorTokensAndShares(ctx context.Context, validator stakingtypes.Validator, sharesToRemove math.LegacyDec) (valOut stakingtypes.Validator, removedTokens math.Int)
-	GetValidator(ctx context.Context, addr sdk.ValAddress) (validator stakingtypes.Validator, found bool)
+	GetValidator(ctx context.Context, addr sdk.ValAddress) (validator stakingtypes.Validator, err error)
 	RemoveDelegation(ctx context.Context, delegation stakingtypes.Delegation) error
 }
