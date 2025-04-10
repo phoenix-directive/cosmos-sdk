@@ -2,6 +2,8 @@ package vesting
 
 import (
 	"context"
+	"fmt"
+	"math"
 
 	"github.com/hashicorp/go-metrics"
 
@@ -12,18 +14,21 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )
 
 type msgServer struct {
 	keeper.AccountKeeper
 	types.BankKeeper
+	types.DistrKeeper
+	types.StakingKeeper
 }
 
 // NewMsgServerImpl returns an implementation of the vesting MsgServer interface,
 // wrapping the corresponding AccountKeeper and BankKeeper.
-func NewMsgServerImpl(k keeper.AccountKeeper, bk types.BankKeeper) types.MsgServer {
-	return &msgServer{AccountKeeper: k, BankKeeper: bk}
+func NewMsgServerImpl(k keeper.AccountKeeper, bk types.BankKeeper, dk types.DistrKeeper, sk types.StakingKeeper) types.MsgServer {
+	return &msgServer{AccountKeeper: k, BankKeeper: bk, DistrKeeper: dk, StakingKeeper: sk}
 }
 
 var _ types.MsgServer = msgServer{}
@@ -236,4 +241,90 @@ func validateAmount(amount sdk.Coins) error {
 	}
 
 	return nil
+}
+
+func (s msgServer) DonateAllVestingTokens(goCtx context.Context, msg *types.MsgDonateAllVestingTokens) (*types.MsgDonateAllVestingTokensResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	ak := s.AccountKeeper
+	dk := s.DistrKeeper
+	sk := s.StakingKeeper
+
+	from, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	acc := ak.GetAccount(ctx, from)
+	if acc == nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("account %s not exists", msg.FromAddress)
+	}
+
+	// get all delegations of an account and undust those that have less than 1 uluna
+	delegations, err := sk.GetDelegatorDelegations(ctx, acc.GetAddress(), math.MaxUint16)
+	if err != nil {
+		return nil, err
+	}
+	for _, delegation := range delegations {
+		validatorAddr, err := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
+		if err != nil {
+			return nil, err
+		}
+		validator, found := sk.GetValidator(ctx, validatorAddr)
+		if !found {
+			return nil, fmt.Errorf("validator not found")
+		}
+		// Try to delete the dust delegation
+		_, removedTokens := sk.RemoveValidatorTokensAndShares(ctx, validator, delegation.Shares)
+		// If the delegation is not dust, return an error and stop the donation flow
+		if !removedTokens.IsZero() {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("account %s has a non-zero staking entry", msg.FromAddress)
+		}
+
+		// Remove the dust delegation shares from the validator
+		err = sk.RemoveDelegation(ctx, delegation)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// check whether an account has any other type of staking entries
+	unbondingDelegations, err := sk.GetUnbondingDelegations(ctx, acc.GetAddress(), math.MaxUint16)
+	if err != nil {
+		return nil, err
+	}
+	redelegations, err := sk.GetRedelegations(ctx, acc.GetAddress(), math.MaxUint16)
+	if err != nil {
+		return nil, err
+	}
+	if len(unbondingDelegations) != 0 ||
+		len(redelegations) != 0 {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("account %s has staking entry", msg.FromAddress)
+	}
+
+	vestingAcc, ok := acc.(exported.VestingAccount)
+	if !ok {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("account %s is not a vesting account", msg.FromAddress)
+	}
+
+	vestingCoins := vestingAcc.GetVestingCoins(ctx.BlockTime())
+	if vestingCoins.IsZero() {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("account %s has no vesting tokens", msg.FromAddress)
+	}
+
+	// Change the account as normal account
+	ak.SetAccount(ctx,
+		authtypes.NewBaseAccount(
+			acc.GetAddress(),
+			acc.GetPubKey(),
+			acc.GetAccountNumber(),
+			acc.GetSequence(),
+		),
+	)
+
+	if err := dk.FundCommunityPool(ctx, vestingCoins, from); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgDonateAllVestingTokensResponse{}, nil
 }
