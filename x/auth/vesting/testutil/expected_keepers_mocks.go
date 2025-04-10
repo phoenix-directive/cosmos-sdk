@@ -190,11 +190,11 @@ func (mr *MockStakingKeeperMockRecorder) GetUnbondingDelegations(ctx, delegator,
 }
 
 // GetValidator mocks base method.
-func (m *MockStakingKeeper) GetValidator(ctx context.Context, addr types.ValAddress) (types0.Validator, bool) {
+func (m *MockStakingKeeper) GetValidator(ctx context.Context, addr types.ValAddress) (types0.Validator, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetValidator", ctx, addr)
 	ret0, _ := ret[0].(types0.Validator)
-	ret1, _ := ret[1].(bool)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
@@ -219,12 +219,13 @@ func (mr *MockStakingKeeperMockRecorder) RemoveDelegation(ctx, delegation interf
 }
 
 // RemoveValidatorTokensAndShares mocks base method.
-func (m *MockStakingKeeper) RemoveValidatorTokensAndShares(ctx context.Context, validator types0.Validator, sharesToRemove math.LegacyDec) (types0.Validator, math.Int) {
+func (m *MockStakingKeeper) RemoveValidatorTokensAndShares(ctx context.Context, validator types0.Validator, sharesToRemove math.LegacyDec) (types0.Validator, math.Int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RemoveValidatorTokensAndShares", ctx, validator, sharesToRemove)
 	ret0, _ := ret[0].(types0.Validator)
 	ret1, _ := ret[1].(math.Int)
-	return ret0, ret1
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // RemoveValidatorTokensAndShares indicates an expected call of RemoveValidatorTokensAndShares.
