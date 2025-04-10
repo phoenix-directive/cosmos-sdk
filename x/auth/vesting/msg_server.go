@@ -274,7 +274,10 @@ func (s msgServer) DonateAllVestingTokens(goCtx context.Context, msg *types.MsgD
 			return nil, err
 		}
 		// Try to delete the dust delegation
-		_, removedTokens := sk.RemoveValidatorTokensAndShares(ctx, validator, delegation.Shares)
+		_, removedTokens, err := sk.RemoveValidatorTokensAndShares(ctx, validator, delegation.Shares)
+		if err != nil {
+			return nil, err
+		}
 		// If the delegation is not dust, return an error and stop the donation flow
 		if !removedTokens.IsZero() {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("account %s has a non-zero staking entry", msg.FromAddress)

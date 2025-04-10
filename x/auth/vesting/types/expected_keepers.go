@@ -5,6 +5,7 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -22,12 +23,14 @@ type DistrKeeper interface {
 }
 
 // StakingKeeper defines the exported interface for staking keeper
+var _ StakingKeeper = &stakingkeeper.Keeper{}
+
 type StakingKeeper interface {
 	GetDelegatorDelegations(ctx context.Context, delegator sdk.AccAddress, maxRetrieve uint16) (delegations []stakingtypes.Delegation, err error)
 	GetUnbondingDelegations(ctx context.Context, delegator sdk.AccAddress, maxRetrieve uint16) (unbondingDelegations []stakingtypes.UnbondingDelegation, err error)
 	GetRedelegations(ctx context.Context, delegator sdk.AccAddress, maxRetrieve uint16) (redelegations []stakingtypes.Redelegation, err error)
 
-	RemoveValidatorTokensAndShares(ctx context.Context, validator stakingtypes.Validator, sharesToRemove math.LegacyDec) (valOut stakingtypes.Validator, removedTokens math.Int)
+	RemoveValidatorTokensAndShares(ctx context.Context, validator stakingtypes.Validator, sharesToRemove math.LegacyDec) (valOut stakingtypes.Validator, removedTokens math.Int, err error)
 	GetValidator(ctx context.Context, addr sdk.ValAddress) (validator stakingtypes.Validator, err error)
 	RemoveDelegation(ctx context.Context, delegation stakingtypes.Delegation) error
 }
