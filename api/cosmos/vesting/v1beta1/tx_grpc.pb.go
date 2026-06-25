@@ -22,6 +22,7 @@ const (
 	Msg_CreateVestingAccount_FullMethodName         = "/cosmos.vesting.v1beta1.Msg/CreateVestingAccount"
 	Msg_CreatePermanentLockedAccount_FullMethodName = "/cosmos.vesting.v1beta1.Msg/CreatePermanentLockedAccount"
 	Msg_CreatePeriodicVestingAccount_FullMethodName = "/cosmos.vesting.v1beta1.Msg/CreatePeriodicVestingAccount"
+	Msg_DonateAllVestingTokens_FullMethodName       = "/cosmos.vesting.v1beta1.Msg/DonateAllVestingTokens"
 )
 
 // MsgClient is the client API for Msg service.
@@ -39,6 +40,9 @@ type MsgClient interface {
 	// CreatePeriodicVestingAccount defines a method that enables creating a
 	// periodic vesting account.
 	CreatePeriodicVestingAccount(ctx context.Context, in *MsgCreatePeriodicVestingAccount, opts ...grpc.CallOption) (*MsgCreatePeriodicVestingAccountResponse, error)
+	// DonateAllVestingTokens defines a method that enables donating all vesting
+	// tokens to community pool
+	DonateAllVestingTokens(ctx context.Context, in *MsgDonateAllVestingTokens, opts ...grpc.CallOption) (*MsgDonateAllVestingTokensResponse, error)
 }
 
 type msgClient struct {
@@ -79,6 +83,16 @@ func (c *msgClient) CreatePeriodicVestingAccount(ctx context.Context, in *MsgCre
 	return out, nil
 }
 
+func (c *msgClient) DonateAllVestingTokens(ctx context.Context, in *MsgDonateAllVestingTokens, opts ...grpc.CallOption) (*MsgDonateAllVestingTokensResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgDonateAllVestingTokensResponse)
+	err := c.cc.Invoke(ctx, Msg_DonateAllVestingTokens_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility.
@@ -94,6 +108,9 @@ type MsgServer interface {
 	// CreatePeriodicVestingAccount defines a method that enables creating a
 	// periodic vesting account.
 	CreatePeriodicVestingAccount(context.Context, *MsgCreatePeriodicVestingAccount) (*MsgCreatePeriodicVestingAccountResponse, error)
+	// DonateAllVestingTokens defines a method that enables donating all vesting
+	// tokens to community pool
+	DonateAllVestingTokens(context.Context, *MsgDonateAllVestingTokens) (*MsgDonateAllVestingTokensResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -112,6 +129,9 @@ func (UnimplementedMsgServer) CreatePermanentLockedAccount(context.Context, *Msg
 }
 func (UnimplementedMsgServer) CreatePeriodicVestingAccount(context.Context, *MsgCreatePeriodicVestingAccount) (*MsgCreatePeriodicVestingAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePeriodicVestingAccount not implemented")
+}
+func (UnimplementedMsgServer) DonateAllVestingTokens(context.Context, *MsgDonateAllVestingTokens) (*MsgDonateAllVestingTokensResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DonateAllVestingTokens not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 func (UnimplementedMsgServer) testEmbeddedByValue()             {}
@@ -188,6 +208,24 @@ func _Msg_CreatePeriodicVestingAccount_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_DonateAllVestingTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDonateAllVestingTokens)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).DonateAllVestingTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_DonateAllVestingTokens_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).DonateAllVestingTokens(ctx, req.(*MsgDonateAllVestingTokens))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +244,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreatePeriodicVestingAccount",
 			Handler:    _Msg_CreatePeriodicVestingAccount_Handler,
+		},
+		{
+			MethodName: "DonateAllVestingTokens",
+			Handler:    _Msg_DonateAllVestingTokens_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

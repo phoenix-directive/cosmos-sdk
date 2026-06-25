@@ -8,6 +8,7 @@ var (
 	_ sdk.Msg = &MsgCreateVestingAccount{}
 	_ sdk.Msg = &MsgCreatePermanentLockedAccount{}
 	_ sdk.Msg = &MsgCreatePeriodicVestingAccount{}
+	_ sdk.Msg = &MsgDonateAllVestingTokens{}
 )
 
 // NewMsgCreateVestingAccount returns a reference to a new MsgCreateVestingAccount.
@@ -37,5 +38,12 @@ func NewMsgCreatePeriodicVestingAccount(fromAddr, toAddr sdk.AccAddress, startTi
 		ToAddress:      toAddr.String(),
 		StartTime:      startTime,
 		VestingPeriods: periods,
+	}
+}
+
+// NewMsgDonateAllVestingTokens returns a reference to a new MsgDonateAllVestingTokens.
+func NewMsgDonateAllVestingTokens(fromAddr sdk.AccAddress) *MsgDonateAllVestingTokens {
+	return &MsgDonateAllVestingTokens{
+		FromAddress: fromAddr.String(),
 	}
 }

@@ -6,14 +6,16 @@
 //	mockgen -source=x/auth/vesting/types/expected_keepers.go -package testutil -destination x/auth/vesting/testutil/expected_keepers_mocks.go
 //
 
-// Package testutil is a generated GoMock package.
-package testutil
+// Package mock_types is a generated GoMock package.
+package mock_types
 
 import (
 	context "context"
 	reflect "reflect"
 
+	math "cosmossdk.io/math"
 	types "github.com/cosmos/cosmos-sdk/types"
+	types0 "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -86,4 +88,154 @@ func (m *MockBankKeeper) SendCoins(ctx context.Context, fromAddr, toAddr types.A
 func (mr *MockBankKeeperMockRecorder) SendCoins(ctx, fromAddr, toAddr, amt any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendCoins", reflect.TypeOf((*MockBankKeeper)(nil).SendCoins), ctx, fromAddr, toAddr, amt)
+}
+
+// MockDistrKeeper is a mock of DistrKeeper interface.
+type MockDistrKeeper struct {
+	ctrl     *gomock.Controller
+	recorder *MockDistrKeeperMockRecorder
+}
+
+// MockDistrKeeperMockRecorder is the mock recorder for MockDistrKeeper.
+type MockDistrKeeperMockRecorder struct {
+	mock *MockDistrKeeper
+}
+
+// NewMockDistrKeeper creates a new mock instance.
+func NewMockDistrKeeper(ctrl *gomock.Controller) *MockDistrKeeper {
+	mock := &MockDistrKeeper{ctrl: ctrl}
+	mock.recorder = &MockDistrKeeperMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDistrKeeper) EXPECT() *MockDistrKeeperMockRecorder {
+	return m.recorder
+}
+
+// FundCommunityPool mocks base method.
+func (m *MockDistrKeeper) FundCommunityPool(ctx context.Context, amount types.Coins, sender types.AccAddress) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FundCommunityPool", ctx, amount, sender)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// FundCommunityPool indicates an expected call of FundCommunityPool.
+func (mr *MockDistrKeeperMockRecorder) FundCommunityPool(ctx, amount, sender interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FundCommunityPool", reflect.TypeOf((*MockDistrKeeper)(nil).FundCommunityPool), ctx, amount, sender)
+}
+
+// MockStakingKeeper is a mock of StakingKeeper interface.
+type MockStakingKeeper struct {
+	ctrl     *gomock.Controller
+	recorder *MockStakingKeeperMockRecorder
+}
+
+// MockStakingKeeperMockRecorder is the mock recorder for MockStakingKeeper.
+type MockStakingKeeperMockRecorder struct {
+	mock *MockStakingKeeper
+}
+
+// NewMockStakingKeeper creates a new mock instance.
+func NewMockStakingKeeper(ctrl *gomock.Controller) *MockStakingKeeper {
+	mock := &MockStakingKeeper{ctrl: ctrl}
+	mock.recorder = &MockStakingKeeperMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockStakingKeeper) EXPECT() *MockStakingKeeperMockRecorder {
+	return m.recorder
+}
+
+// GetDelegatorDelegations mocks base method.
+func (m *MockStakingKeeper) GetDelegatorDelegations(ctx context.Context, delegator types.AccAddress, maxRetrieve uint16) ([]types0.Delegation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDelegatorDelegations", ctx, delegator, maxRetrieve)
+	ret0, _ := ret[0].([]types0.Delegation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDelegatorDelegations indicates an expected call of GetDelegatorDelegations.
+func (mr *MockStakingKeeperMockRecorder) GetDelegatorDelegations(ctx, delegator, maxRetrieve interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDelegatorDelegations", reflect.TypeOf((*MockStakingKeeper)(nil).GetDelegatorDelegations), ctx, delegator, maxRetrieve)
+}
+
+// GetRedelegations mocks base method.
+func (m *MockStakingKeeper) GetRedelegations(ctx context.Context, delegator types.AccAddress, maxRetrieve uint16) ([]types0.Redelegation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRedelegations", ctx, delegator, maxRetrieve)
+	ret0, _ := ret[0].([]types0.Redelegation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRedelegations indicates an expected call of GetRedelegations.
+func (mr *MockStakingKeeperMockRecorder) GetRedelegations(ctx, delegator, maxRetrieve interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRedelegations", reflect.TypeOf((*MockStakingKeeper)(nil).GetRedelegations), ctx, delegator, maxRetrieve)
+}
+
+// GetUnbondingDelegations mocks base method.
+func (m *MockStakingKeeper) GetUnbondingDelegations(ctx context.Context, delegator types.AccAddress, maxRetrieve uint16) ([]types0.UnbondingDelegation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUnbondingDelegations", ctx, delegator, maxRetrieve)
+	ret0, _ := ret[0].([]types0.UnbondingDelegation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUnbondingDelegations indicates an expected call of GetUnbondingDelegations.
+func (mr *MockStakingKeeperMockRecorder) GetUnbondingDelegations(ctx, delegator, maxRetrieve interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUnbondingDelegations", reflect.TypeOf((*MockStakingKeeper)(nil).GetUnbondingDelegations), ctx, delegator, maxRetrieve)
+}
+
+// GetValidator mocks base method.
+func (m *MockStakingKeeper) GetValidator(ctx context.Context, addr types.ValAddress) (types0.Validator, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetValidator", ctx, addr)
+	ret0, _ := ret[0].(types0.Validator)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetValidator indicates an expected call of GetValidator.
+func (mr *MockStakingKeeperMockRecorder) GetValidator(ctx, addr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetValidator", reflect.TypeOf((*MockStakingKeeper)(nil).GetValidator), ctx, addr)
+}
+
+// RemoveDelegation mocks base method.
+func (m *MockStakingKeeper) RemoveDelegation(ctx context.Context, delegation types0.Delegation) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveDelegation", ctx, delegation)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveDelegation indicates an expected call of RemoveDelegation.
+func (mr *MockStakingKeeperMockRecorder) RemoveDelegation(ctx, delegation interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveDelegation", reflect.TypeOf((*MockStakingKeeper)(nil).RemoveDelegation), ctx, delegation)
+}
+
+// RemoveValidatorTokensAndShares mocks base method.
+func (m *MockStakingKeeper) RemoveValidatorTokensAndShares(ctx context.Context, validator types0.Validator, sharesToRemove math.LegacyDec) (types0.Validator, math.Int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveValidatorTokensAndShares", ctx, validator, sharesToRemove)
+	ret0, _ := ret[0].(types0.Validator)
+	ret1, _ := ret[1].(math.Int)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// RemoveValidatorTokensAndShares indicates an expected call of RemoveValidatorTokensAndShares.
+func (mr *MockStakingKeeperMockRecorder) RemoveValidatorTokensAndShares(ctx, validator, sharesToRemove interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveValidatorTokensAndShares", reflect.TypeOf((*MockStakingKeeper)(nil).RemoveValidatorTokensAndShares), ctx, validator, sharesToRemove)
 }
